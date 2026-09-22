@@ -1,4 +1,4 @@
-name: Build Android APK Auto Fix
+name: Build Android APK Final Wrapper Fix
 on:
   push:
     branches: [ "main" ]
@@ -17,25 +17,22 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Auto Create Missing Gradle Wrapper
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Build APK with Auto Wrapper
       run: |
-        # ወደ ዋናው ማውጫ ወይም አፕ ፎልደር ገብቶ ግራድልን ማደስ
         if [ -d "app" ]; then
           cd app
         fi
-        gradle wrapper --gradle-version 8.2
+        # የGradle ፋይሎችን በራሱ እንዲያድስ ማድረግ
+        gradle wrapper
         chmod +x gradlew
-
-    - name: Build APK Directly
-      run: |
-        if [ -d "app" ]; then
-          cd app && ./gradlew assembleDebug
-        else
-          ./gradlew assembleDebug
-        fi
+        ./gradlew assembleDebug
 
     - name: Upload Generated APK
       uses: actions/upload-artifact@v4
       with:
         name: Gold-Trading-Bot
         path: "**/build/outputs/apk/debug/*.apk"
+
