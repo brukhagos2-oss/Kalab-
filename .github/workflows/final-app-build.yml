@@ -1,4 +1,4 @@
-name: Build Android APK Final
+name: Build Android APK Final Fix
 on:
   push:
     branches: [ "main" ]
@@ -18,22 +18,21 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Find and Grant Permission
+    - name: Run Build Directly inside App Folder
       run: |
-        chmod +x ./gradlew || chmod +x app/gradlew || echo "Gradlew found elsewhere"
-
-    - name: Build APK
-      run: |
-        if [ -f "./gradlew" ]; then
-          ./gradlew assembleDebug
+        if [ -f "app/gradlew" ]; then
+          cd app && chmod +x gradlew && ./gradlew assembleDebug
+        elif [ -f "gradlew" ]; then
+          chmod +x gradlew && ./gradlew assembleDebug
         else
-          cd app && ./gradlew assembleDebug
+          # ፎልደሩን በራሱ ፈልጎ እንዲገባ ማድረግ
+          GRADLE_DIR=$(find . -name gradlew -exec dirname {} \;)
+          cd $GRADLE_DIR && chmod +x gradlew && ./gradlew assembleDebug
         fi
 
-    - name: Upload APK
+    - name: Upload Generated APK
       uses: actions/upload-artifact@v4
       with:
         name: Gold-Trading-Bot
-        path: |
-          **/build/outputs/apk/debug/*.apk
+        path: "**/build/outputs/apk/debug/*.apk"
 
