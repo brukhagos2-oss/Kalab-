@@ -1,0 +1,7 @@
+{
+  "name": "Aurum Brain",
+  "description": "24/7 Gold Trading Bot & 10-Year Price Action Analyzer (XAU/USD) with Smart Money Concepts and Anti-Overlap Guard",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
