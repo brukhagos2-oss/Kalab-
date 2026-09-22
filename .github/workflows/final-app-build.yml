@@ -1,4 +1,4 @@
-name: Build Android APK Final Wrapper Fix
+name: Build Android APK Pure Fix
 on:
   push:
     branches: [ "main" ]
@@ -16,19 +16,13 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+    - name: Grant Execute Permission
+      run: chmod +x gradlew
 
-    - name: Build APK with Auto Wrapper
-      run: |
-        if [ -d "app" ]; then
-          cd app
-        fi
-        # የGradle ፋይሎችን በራሱ እንዲያድስ ማድረግ
-        gradle wrapper
-        chmod +x gradlew
-        ./gradlew assembleDebug
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
 
     - name: Upload Generated APK
       uses: actions/upload-artifact@v4
