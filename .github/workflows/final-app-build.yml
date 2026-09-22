@@ -1,4 +1,4 @@
-name: Build Android APK Final Fix
+name: Build Android APK Auto Fix
 on:
   push:
     branches: [ "main" ]
@@ -16,18 +16,22 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    - name: Run Build Directly inside App Folder
+    - name: Auto Create Missing Gradle Wrapper
       run: |
-        if [ -f "app/gradlew" ]; then
-          cd app && chmod +x gradlew && ./gradlew assembleDebug
-        elif [ -f "gradlew" ]; then
-          chmod +x gradlew && ./gradlew assembleDebug
+        # ወደ ዋናው ማውጫ ወይም አፕ ፎልደር ገብቶ ግራድልን ማደስ
+        if [ -d "app" ]; then
+          cd app
+        fi
+        gradle wrapper --gradle-version 8.2
+        chmod +x gradlew
+
+    - name: Build APK Directly
+      run: |
+        if [ -d "app" ]; then
+          cd app && ./gradlew assembleDebug
         else
-          # ፎልደሩን በራሱ ፈልጎ እንዲገባ ማድረግ
-          GRADLE_DIR=$(find . -name gradlew -exec dirname {} \;)
-          cd $GRADLE_DIR && chmod +x gradlew && ./gradlew assembleDebug
+          ./gradlew assembleDebug
         fi
 
     - name: Upload Generated APK
@@ -35,4 +39,3 @@ jobs:
       with:
         name: Gold-Trading-Bot
         path: "**/build/outputs/apk/debug/*.apk"
-
